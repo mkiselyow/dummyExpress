@@ -1,0 +1,34 @@
+{
+  "collMod": "exercises",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "title": "Exercises Object Validation",
+      "required": [
+        "description",
+        "duration",
+        "userId"
+      ],
+      "properties": {
+        "description": {
+          "bsonType": "string",
+          "description": "'description' must be a string and is required"
+        },
+        "duration": {
+          "bsonType": "int",
+          "minimum": 0,
+          "maximum": 999999,
+          "description": "'duration' must be an integer in [ 0, 999999 ] and is required"
+        },
+        "date": {
+          "bsonType": "date",
+          "description": "'date' must be a date"
+        },
+        "userId": {
+          "bsonType": "objectId",
+          "description": "'userId' is required"
+        }
+      }
+    }
+  }
+}
