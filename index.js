@@ -42,8 +42,8 @@ app.post('/api/users/:userId/exercises', async (req, res) => {
   if (ObjectId.isValid(req.params.userId)) { // todo: move 'ObjectId.isValid handling' to guard function
     const result = await Exercises.create({
       description: req.body.description,
-      duration: req.body.duration,
-      date: req.body.date || (new Date()),
+      duration: Number(req.body.duration),
+      date: req.body.date ? (new Date(req.body.date)) : (new Date()),
       userId: new ObjectId(req.params.userId)
     })
     res.status(result.status).json(result.errors || result.data)
@@ -52,12 +52,12 @@ app.post('/api/users/:userId/exercises', async (req, res) => {
   }
 });
 
-app.get('/api/users/:userId/exercises', async (req, res) => {
+app.get('/api/users/:userId/logs', async (req, res) => {
   if (ObjectId.isValid(req.params.userId)) { // todo: move 'ObjectId.isValid handling' to guard function
     const result = await Exercises.paginate({
-      from: (new Date(req.query.from)), // todo: make query params optional
-      to: (new Date(req.query.to)), // todo: probably should be the end of the day
-      limit: Number(req.query.limit),
+      from: req.query.from ? (new Date(req.query.from)) : null,
+      to: req.query.to ? (new Date(req.query.to)) : null, // todo: probably should be the end of the day
+      limit: req.query.limit ? Number(req.query.limit) : null,
       userId: new ObjectId(req.params.userId)
     })
     res.status(result.status).json(result.errors || result.data)

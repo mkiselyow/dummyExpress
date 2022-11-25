@@ -32,7 +32,7 @@ class Exercises {
       result.status = 404
       result.errors = 'user not found'
     } else {
-      result = await database.paginate('exercises', {from, to, limit})
+      result = await database.paginate('exercises', {from, to, limit, userId})
 
       result.data.logs = result.data.logs?.map(({_id, description, duration, date}) => ({
         id: _id,

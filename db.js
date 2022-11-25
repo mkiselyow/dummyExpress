@@ -50,18 +50,49 @@ module.exports.database = {
     return result
   },
 
-  async paginate (collectionName, {from, to, limit}) {
-    const logs = await this._connection(collectionName,
-      (collection) => collection
-        .find( { date: { $gte: from, $lte: to } } )
-        .sort( { date: -1 } )
-        .limit( limit )
-        .toArray()
+  async paginate (collectionName, {from, to, limit, userId}) {
+    const searchParams = {
+      userId: userId
+    }
+    if (from) {
+      searchParams.date = {
+        $gte: from
+      }
+    }
+    if (to) {
+      if (searchParams.date) {
+        searchParams.date = {
+          ...searchParams.date,
+          $lte: to
+        }
+      } else {
+        searchParams.date = {
+          $lte: to
+        }
+      }
+    }
+
+    let logs = null
+    if (limit) {
+      logs = await this._connection(collectionName,
+        (collection) => collection
+          .find(searchParams)
+          .sort({ date: -1 })
+          .limit( limit )
+          .toArray()
       )
+    } else {
+      logs = await this._connection(collectionName,
+        (collection) => collection
+          .find(searchParams)
+          .sort({ date: -1 })
+          .toArray()
+      )
+    }
 
     const count = await this._connection(collectionName,
       (collection) => collection
-        .find( { date: { $gte: from, $lte: to } } )
+        .find(searchParams)
         .count()
       )
 
