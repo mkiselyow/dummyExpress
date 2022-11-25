@@ -4,12 +4,15 @@ const cors = require('cors')
 const User = require('./models/user.js')
 const Exercises = require('./models/exercises.js')
 const { ObjectId } = require('mongodb')
+const bodyParser = require('body-parser');
 
 require('dotenv').config()
 
 app.use(cors())
 app.use(express.static('public'))
 app.use(express.json()) // parses request body
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
