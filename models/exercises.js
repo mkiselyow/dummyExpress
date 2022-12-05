@@ -1,5 +1,7 @@
 const { database } = require('../db.js')
 const User = require('./user.js')
+const { body, param, query } = require('express-validator')
+const { ObjectId } = require('mongodb')
 
 class Exercises {
   async create (data) {
@@ -43,6 +45,58 @@ class Exercises {
     }
 
     return result
+  }
+
+  validate () {
+    return [
+      param('userId', 'user id isn\'t correct')
+        .custom((userId) => {
+          if (!ObjectId.isValid(userId)) throw new Error('user id isn\'t valid')
+
+          return User.get(userId).then((user) => {
+            if (user.status !== 404) {
+              return Promise.reject('user id isn\'t correct')
+            }
+          })
+        }),
+      body('date', 'duration should be a valid date')
+        .optional()
+        .isISO8601()
+        .toDate(),
+      body('description', 'description is required')
+        .trim()
+        .notEmpty()
+        .isLength({ min: 10, max: 250 })
+        .withMessage('description length should be 2 - 250 chars'),
+      body('duration', 'duration is required and should be between 1 and 999999')
+        .isInt({ min: 1, max: 999999 })
+    ]
+  }
+
+  validatePagination () {
+    return [
+      param('userId', 'user id isn\'t correct')
+        .custom((userId) => {
+          if (!ObjectId.isValid(userId)) throw new Error('user id isn\'t valid')
+
+          return User.get(userId).then((user) => {
+            if (user.status !== 404) {
+              return Promise.reject('user id isn\'t correct')
+            }
+          })
+        }),
+      query('from', 'from should be a valid date')
+        .optional()
+        .isISO8601()
+        .toDate(),
+      query('to', 'to should be a valid date')
+        .optional()
+        .isISO8601()
+        .toDate(),
+      query('limit', 'limit is not valid')
+        .optional()
+        .isInt({ min: 1, max: 999999 })
+    ]
   }
 }
 

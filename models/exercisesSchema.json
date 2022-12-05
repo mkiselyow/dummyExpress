@@ -12,11 +12,12 @@
       "properties": {
         "description": {
           "bsonType": "string",
-          "description": "'description' must be a string and is required"
+          "description": "'description' must be a string and is required",
+          "minLength": 10
         },
         "duration": {
           "bsonType": "int",
-          "minimum": 0,
+          "minimum": 1,
           "maximum": 999999,
           "description": "'duration' must be an integer in [ 0, 999999 ] and is required"
         },

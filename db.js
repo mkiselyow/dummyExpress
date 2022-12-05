@@ -40,6 +40,18 @@ module.exports.database = {
     return result
   },
 
+  async getByProp (collectionName, propName, propValue) {
+    const result = await this._connection(
+      collectionName,
+      (collection) => collection.findOne({ [propName]: propValue })
+    )
+    if (result.data === null) {
+      result.status = 404
+      result.errors = 'not found'
+    }
+    return result
+  },
+
   async getAll (collectionName) {
     return this._connection(collectionName, (collection) => collection.find({}).toArray())
   },
@@ -77,7 +89,7 @@ module.exports.database = {
       logs = await this._connection(collectionName,
         (collection) => collection
           .find(searchParams)
-          .sort({ date: -1 })
+          .sort({ date: 1 })
           .limit( limit )
           .toArray()
       )
@@ -85,7 +97,7 @@ module.exports.database = {
       logs = await this._connection(collectionName,
         (collection) => collection
           .find(searchParams)
-          .sort({ date: -1 })
+          .sort({ date: 1 })
           .toArray()
       )
     }
