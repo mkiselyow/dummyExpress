@@ -59,8 +59,8 @@ class Exercises {
             }
           })
         }),
-      body('date', 'duration should be a valid date')
-        .optional()
+      body('date', 'date should be a valid date')
+        .optional({checkFalsy: true})
         .isISO8601()
         .toDate(),
       body('description', 'description is required')

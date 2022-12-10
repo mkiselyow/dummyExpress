@@ -6,6 +6,7 @@ const Exercises = require('./models/exercises.js')
 const { ObjectId } = require('mongodb')
 const bodyParser = require('body-parser');
 const { validationResult } = require('express-validator')
+const { database } = require('./db')
 
 require('dotenv').config()
 
@@ -14,6 +15,9 @@ app.use(express.static('public'))
 app.use(express.json()) // parses request body
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
+
+database._connection('users')
+database._connection('exercises')
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')

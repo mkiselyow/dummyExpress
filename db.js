@@ -4,6 +4,8 @@ const password = 'm001-mongodb-basics';
 const uri = `mongodb+srv://${username}:${password}@sandbox.uuwsva5.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+const cacheConnections = {}
+
 module.exports.database = {
   async _connection (collection, callback) {
     let result = {
@@ -11,10 +13,19 @@ module.exports.database = {
       status: 200
     }
     try {
-      await client.connect()
-      const database = client.db('sample_users')
-      const collectionRef = database.collection(collection)
-      result.data = await callback(collectionRef)
+      let database
+      let collectionRef
+
+      if (!cacheConnections[collection]) {
+        await client.connect()
+        database = client.db('sample_users')
+        collectionRef = database.collection(collection)
+        cacheConnections[collection] = collectionRef
+      }
+
+      if (callback) {
+        result.data = await callback(cacheConnections[collection])
+      }
     } catch (e) {
       if (e.message === 'Document failed validation') {
         // expected errors
@@ -25,8 +36,6 @@ module.exports.database = {
         result.status = 500
         result.errors = e.message || e
       }
-    } finally {
-      await client.close();
     }
     return result
   },
